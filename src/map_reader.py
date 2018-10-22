@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import rospy
 from std_msgs.msg import String
 import geometry_msgs.msg
@@ -64,21 +65,20 @@ def conver2polar(robot_x,robot_y,point_x,point_y):
     phi =  math.degrees(math.atan2(point_y - robot_y,point_x - robot_x))
     y = (- phi - 90)
     if y < 0 : y = y + 360
-    # if phi < 0 : phi = phi + 360
-    # if phi > 360 : phi = phi - 360
     rho = math.sqrt(((point_y - robot_y)**2) + ((point_x - robot_x)**2))
     return rho,y
 
 
-index = 6000
+index = 0
+Drawn_points = 0
+all_points = 0
 once = True
-def callback(data):
-    global yaw_callback_last_time , __yaw,index,once
+def read_position(data):
+    global yaw_callback_last_time , __yaw,index,once,Drawn_points
     robot_x_pos = data.pose.position.x * 10 # meter
     robot_y_pos = data.pose.position.y * 10 # meter
-    point_x = float(my_data[index][0]/1000)
-    point_y = float(my_data[index][1]/1000)
-    # print(data.pose.position.z * 10)
+    point_x = float(wells_position_list[index][0]/1000)#convert to milimeter
+    point_y = float(wells_position_list[index][1]/1000)#convert to milimeter
     (eu_roll, eu_pitch, eu_yaw) = tf.transformations.euler_from_quaternion(
         [data.pose.orientation.x,
          data.pose.orientation.y,
@@ -87,52 +87,59 @@ def callback(data):
           )
     now = time.time()
     if now - yaw_callback_last_time > yaw_callback_time:
-        # print('ori -> %f'%(eu_yaw*100))
-        R,Tetha = conver2polar(robot_x_pos,robot_y_pos,point_x,point_y)
-        #R = 0.6
-        #Tetha = 0
-        __yaw = yaw.update_pid(0,eu_yaw*100)
-        __velo = 0
         dot = 0
-        # print("phi -> %f"%Tetha)
-        # print("velo pid -> %f"%__velo)
-        print("term P yaw -> %f"%velo.get_term_p())
-        # print("term P velo -> %f"%velo.get_term_p())
-        # print("term d yaw -> %f"%velo.get_term_d())
+        R,Tetha = conver2polar(robot_x_pos,robot_y_pos,point_x,point_y)
+        __yaw = yaw.update_pid(0,eu_yaw*100)
+        __velo = velo.update_pid(0,R)        
+
         print("x error -> %f"%(robot_x_pos - point_x))
         print("Y error -> %f"%(robot_y_pos - point_y))
-        print('%d dots of %d'%(index,len(my_data)));
-        __velo = velo.update_pid(0,R)
+        print('%d dots of %d'%(Drawn_points,all_points))
+
         if velo.get_term_p() < 300 and velo.get_term_p() > -300 and once == True:
             velo.resetI()
             once = False
         if velo.get_term_p() < 50 and velo.get_term_p() > -50 :
+            Drawn_points += 1
             dot = 1
-            dot_done = True
-            velo.resetI()
             once = True
+            velo.resetI()
             my_data.pop(index)
             index = randint(0, len(my_data))
-            if index == len(my_data):
+            if Drawn_points == all_points:
                 while True:
-                    pass
+                    print("map Done!!!!\nrerun the program with new map!!!!")
 
         ser.write('%d,%d,%d,%d\n'%(__velo,Tetha,__yaw,dot))
-        print('%d,%d,%d,%d\n'%(__velo,Tetha,__yaw,dot))
+        # print('%d,%d,%d,%d\n'%(__velo,Tetha,__yaw,dot))
         yaw_callback_last_time = now
 
 
-def listener():
+def listen_to_aruco_single_node():
 
     rospy.init_node('Well_O_Graph', anonymous=False)
 
-    rospy.Subscriber("/aruco_single/pose", geometry_msgs.msg.PoseStamped, callback)
+    rospy.Subscriber("/aruco_single/pose", geometry_msgs.msg.PoseStamped, read_position)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
 
+
+
+
+list_of_maps = [
+    '/home/shb/Desktop/Gaavkhouni.csv',#0
+    '/home/shb/Desktop/Gaavkhouni.csv',#1
+    '/home/shb/Desktop/Gaavkhouni.csv',#2
+    '/home/shb/Desktop/Gaavkhouni.csv',#3
+    '/home/shb/Desktop/Gaavkhouni.csv']#4
+
+
+print_map_num = 0
+
 if __name__ == '__main__':
-    y = genfromtxt('/home/shb/Desktop/Gaavkhouni.csv', delimiter=',')
-    my_data = y.tolist()
+    map = genfromtxt(list_of_maps[print_map_num], delimiter=',')
+    wells_position_list = map.tolist()
+    all_points = len(wells_position_list)
     open_connection()
-    listener()
+    listen_to_aruco_single_node()
