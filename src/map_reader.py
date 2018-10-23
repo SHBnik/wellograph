@@ -5,6 +5,7 @@ from std_msgs.msg import String
 import geometry_msgs.msg
 import time
 import serial
+import sys
 
 from PID import pid
 from numpy import genfromtxt
@@ -28,7 +29,6 @@ ser = None
 __yaw = 0
 __velo = 0
 
-my_data = []
 
 
 def open_connection():
@@ -74,7 +74,7 @@ Drawn_points = 0
 all_points = 0
 once = True
 def read_position(data):
-    global yaw_callback_last_time , __yaw,index,once,Drawn_points
+    global yaw_callback_last_time , __yaw,index,once,Drawn_points,wells_position_list
     robot_x_pos = data.pose.position.x * 10 # meter
     robot_y_pos = data.pose.position.y * 10 # meter
     point_x = float(wells_position_list[index][0]/1000)#convert to milimeter
@@ -90,7 +90,7 @@ def read_position(data):
         dot = 0
         R,Tetha = conver2polar(robot_x_pos,robot_y_pos,point_x,point_y)
         __yaw = yaw.update_pid(0,eu_yaw*100)
-        __velo = velo.update_pid(0,R)        
+        __velo = velo.update_pid(0,R)
 
         print("x error -> %f"%(robot_x_pos - point_x))
         print("Y error -> %f"%(robot_y_pos - point_y))
@@ -104,8 +104,8 @@ def read_position(data):
             dot = 1
             once = True
             velo.resetI()
-            my_data.pop(index)
-            index = randint(0, len(my_data))
+            wells_position_list.pop(index)
+            index = randint(0, len(wells_position_list))
             if Drawn_points == all_points:
                 while True:
                     print("map Done!!!!\nrerun the program with new map!!!!")
@@ -128,17 +128,20 @@ def listen_to_aruco_single_node():
 
 
 list_of_maps = [
-    '/home/shb/Desktop/Gaavkhouni.csv',#0
-    '/home/shb/Desktop/Gaavkhouni.csv',#1
-    '/home/shb/Desktop/Gaavkhouni.csv',#2
-    '/home/shb/Desktop/Gaavkhouni.csv',#3
-    '/home/shb/Desktop/Gaavkhouni.csv']#4
+    '/home/shb/Desktop/maps/Bakhtegan_Maharlou.csv',#0
+    '/home/shb/Desktop/maps/Gaavkhuni.csv',#1
+    '/home/shb/Desktop/maps/Parishan.csv',#2
+    '/home/shb/Desktop/maps/Urmia.csv',]#3
 
 
-print_map_num = 0
+
 
 if __name__ == '__main__':
-    map = genfromtxt(list_of_maps[print_map_num], delimiter=',')
+    map_index = int(sys.argv[1])
+    if map_index > 3 or map_index < 0:
+        print("!!! index out of range !!!")
+        while True:pass
+    map = genfromtxt(list_of_maps[map_index], delimiter=',')
     wells_position_list = map.tolist()
     all_points = len(wells_position_list)
     open_connection()
