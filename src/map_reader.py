@@ -14,6 +14,7 @@ import tf
 import math
 
 from random import randint
+from random import shuffle
 
 
 # yaw = pid(10,0,450)
@@ -69,6 +70,17 @@ def conver2polar(robot_x,robot_y,point_x,point_y):
     return rho,y
 
 
+
+
+
+def get_backup_of_index(inx):
+    with open('index.bc', 'w') as backup_index:
+        backup_print.write(map_index)
+        backup_print.write(inx)
+
+
+
+map_index = None
 index = 0
 Drawn_points = 0
 all_points = 0
@@ -77,8 +89,8 @@ def read_position(data):
     global yaw_callback_last_time , __yaw,index,once,Drawn_points,wells_position_list
     robot_x_pos = data.pose.position.x * 10 # meter
     robot_y_pos = data.pose.position.y * 10 # meter
-    point_x = float(wells_position_list[index][0]/1000)#convert to milimeter
-    point_y = float(wells_position_list[index][1]/1000)#convert to milimeter
+    point_x = float(wells_position_list[index][1]/1000)#convert to milimeter
+    point_y = float(wells_position_list[index][0]/1000)#convert to milimeter
     (eu_roll, eu_pitch, eu_yaw) = tf.transformations.euler_from_quaternion(
         [data.pose.orientation.x,
          data.pose.orientation.y,
@@ -104,8 +116,10 @@ def read_position(data):
             dot = 1
             once = True
             velo.resetI()
-            wells_position_list.pop(index)
-            index = randint(0, len(wells_position_list))
+            # wells_position_list.pop(index)
+            # index = randint(0, len(wells_position_list))
+            index += 1
+            get_backup_of_index(index) 
             if Drawn_points == all_points:
                 while True:
                     print("map Done!!!!\nrerun the program with new map!!!!")
@@ -138,7 +152,13 @@ list_of_maps = [
 
 if __name__ == '__main__':
     map_index = int(sys.argv[1])
-    if map_index > 3 or map_index < 0:
+    if map_index == 97:
+        
+        backup_index = open('index.bc', 'r')
+        map_index = int(backup_index.readline())
+        index = int(backup_index.readline())
+
+    elif map_index > 3 or map_index < 0:
         print("!!! index out of range !!!")
         while True:pass
     map = genfromtxt(list_of_maps[map_index], delimiter=',')
