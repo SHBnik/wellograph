@@ -17,11 +17,10 @@ from random import randint
 from random import shuffle
 
 
-# yaw = pid(10,0,450)
-yaw = pid(9,0,100)
-# velo = pid(9000,0,10)
-# velo = pid(18500,50,10000)
-velo = pid(18500,100,10000)
+
+yaw = pid(3.4,0,2)
+velo = pid(9800,100,5000)
+
 
 yaw_callback_time = 0.015 #15 ms
 yaw_callback_last_time = 0
@@ -74,9 +73,10 @@ def conver2polar(robot_x,robot_y,point_x,point_y):
 
 
 def get_backup_of_index(inx):
+    global map_index
     with open('index.bc', 'w') as backup_index:
-        backup_print.write(map_index)
-        backup_print.write(inx)
+        backup_index.write(str(map_index)+'\n')
+        backup_index.write(str(inx)+'\n')
 
 
 
@@ -119,7 +119,7 @@ def read_position(data):
             # wells_position_list.pop(index)
             # index = randint(0, len(wells_position_list))
             index += 1
-            get_backup_of_index(index) 
+            get_backup_of_index(index)
             if Drawn_points == all_points:
                 while True:
                     print("map Done!!!!\nrerun the program with new map!!!!")
@@ -153,10 +153,11 @@ list_of_maps = [
 if __name__ == '__main__':
     map_index = int(sys.argv[1])
     if map_index == 97:
-        
+
         backup_index = open('index.bc', 'r')
         map_index = int(backup_index.readline())
         index = int(backup_index.readline())
+        Drawn_points = index
 
     elif map_index > 3 or map_index < 0:
         print("!!! index out of range !!!")

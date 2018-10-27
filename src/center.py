@@ -16,11 +16,10 @@ import math
 from random import randint
 
 
-# yaw = pid(10,0,450)
-yaw = pid(9,0,100)
-# velo = pid(9000,0,10)
-# velo = pid(18500,50,10000)
-velo = pid(18500,0,10000)
+# yaw = pid(9,0,100)
+yaw = pid(3.4,0,2)
+# velo = pid(18500,0,10000)
+velo = pid(9800,0,5000)
 
 yaw_callback_time = 0.015 #15 ms
 yaw_callback_last_time = 0
