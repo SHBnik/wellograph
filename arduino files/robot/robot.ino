@@ -32,10 +32,10 @@ void create_dot(){
   motorA_move(0);
   motorB_move(0);
   motorC_move(0);
-  delay(300);
   pen.write(100);
   delay(300);
   pen.write(180);
+  delay(300);
 }
 
 

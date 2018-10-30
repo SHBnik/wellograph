@@ -19,7 +19,7 @@ from random import shuffle
 
 
 yaw = pid(3.4,0,2)
-velo = pid(9800,100,5000)
+velo = pid(9800,50,5000)
 
 
 yaw_callback_time = 0.015 #15 ms
