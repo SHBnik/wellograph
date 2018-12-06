@@ -21,8 +21,7 @@ class pid:
         self.time = time.time()
 
         elapsed_time = int((self.time - self.last_time)*1000)
-        # print(elapsed_time)
-        # print("error -> %f"%self.Error)
+
         self.P = self.Error * self.Kp
         self.D = ((self.Error - self.last_Error)/(elapsed_time) )* self.Kd
         self.I += (self.Error ) * self.Ki
@@ -33,7 +32,7 @@ class pid:
         self.last_time = self.time
         self.last_Error = self.Error
         pid = (self.P + self.I + self.D )
-        # print('pid -> %d'%pid)
+
         if pid > 255: pid = 255
         if pid < -255: pid = -255
         return pid
@@ -46,5 +45,6 @@ class pid:
 
     def get_term_d(self):
         return self.D
+        
     def resetI(self):
          self.I = 0
