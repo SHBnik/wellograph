@@ -19,7 +19,8 @@ from random import shuffle
 
 
 yaw = pid(3.4,0,2)
-velo = pid(9800,100,5000)
+# velo = pid(9800,50,5000)
+velo = pid(9800,50,5000)
 
 
 yaw_callback_time = 0.015 #15 ms
@@ -111,7 +112,7 @@ def read_position(data):
         if velo.get_term_p() < 300 and velo.get_term_p() > -300 and once == True:
             velo.resetI()
             once = False
-        if velo.get_term_p() < 50 and velo.get_term_p() > -50 :
+        if velo.get_term_p() < 40 and velo.get_term_p() > -40 :
             Drawn_points += 1
             dot = 1
             once = True
@@ -120,11 +121,12 @@ def read_position(data):
             # index = randint(0, len(wells_position_list))
             index += 1
             get_backup_of_index(index)
-            if Drawn_points == all_points:
-                while True:
-                    print("map Done!!!!\nrerun the program with new map!!!!")
 
         ser.write('%d,%d,%d,%d\n'%(__velo,Tetha,__yaw,dot))
+
+        if Drawn_points == all_points:
+            while True:
+                print("map Done!!!!\nrerun the program with new map!!!!")
         # print('%d,%d,%d,%d\n'%(__velo,Tetha,__yaw,dot))
         yaw_callback_last_time = now
 
@@ -145,7 +147,8 @@ list_of_maps = [
     '/home/shb/Desktop/maps/Bakhtegan_Maharlou.csv',#0
     '/home/shb/Desktop/maps/Gaavkhuni.csv',#1
     '/home/shb/Desktop/maps/Parishan.csv',#2
-    '/home/shb/Desktop/maps/Urmia.csv',]#3
+    '/home/shb/Desktop/maps/Urmia.csv',#3
+    '/home/shb/Desktop/maps/TEST.csv']#4
 
 
 
@@ -159,7 +162,7 @@ if __name__ == '__main__':
         index = int(backup_index.readline())
         Drawn_points = index
 
-    elif map_index > 3 or map_index < 0:
+    elif map_index > 4 or map_index < 0:
         print("!!! index out of range !!!")
         while True:pass
     map = genfromtxt(list_of_maps[map_index], delimiter=',')
