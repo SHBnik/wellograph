@@ -19,7 +19,8 @@ from random import randint
 # yaw = pid(9,0,100)
 yaw = pid(3.4,0,2)
 # velo = pid(18500,0,10000)
-velo = pid(9800,0,5000)
+#velo = pid(9800,0,5000)
+velo = pid(1500,0.09,9.5)
 
 yaw_callback_time = 0.015 #15 ms
 yaw_callback_last_time = 0
@@ -33,6 +34,7 @@ __velo = 0
 def open_connection():
     global ser
 
+
     try:
         ser = serial.Serial(
         port='/dev/ttyACM0',
@@ -41,7 +43,8 @@ def open_connection():
         stopbits=serial.STOPBITS_ONE,
         bytesize=serial.EIGHTBITS
         )
-    except:
+    except Exception as e:
+	print('error is ',e)
         ser = serial.Serial(
         port='/dev/ttyACM1',
         baudrate=9600,

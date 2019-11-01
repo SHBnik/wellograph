@@ -45,6 +45,9 @@ class pid:
 
     def get_term_d(self):
         return self.D
+
+    def get_error(self):
+        return self.Error
         
     def resetI(self):
          self.I = 0
