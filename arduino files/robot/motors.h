@@ -2,17 +2,17 @@
 
 #include <math.h>
 
-#define motorA_in1 22
-#define motorA_in2 24
-#define motorA_pwm 8
+#define motorA_in1 23//22
+#define motorA_in2 25//24
+#define motorA_pwm 9//8
 
-#define motorB_in1 25
-#define motorB_in2 23
-#define motorB_pwm 9
+#define motorB_in1 26//25
+#define motorB_in2 27//23
+#define motorB_pwm 10//9
 
-#define motorC_in1 26
-#define motorC_in2 27
-#define motorC_pwm 10
+#define motorC_in1 22//-1//26
+#define motorC_in2 24//-1//27
+#define motorC_pwm 8//-1//10
 
 
 int A_speed = 0 , B_speed = 0 , C_speed = 0;

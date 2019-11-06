@@ -3,6 +3,7 @@
 #include "RF24.h"
 #include <SPI.h>
 #include "nRF24l01.h"
+#include "printf.h"
 
 // set Chip-Enable (CE) and Chip-Select-Not (CSN) radio setup pins
 #define CE_PIN 9
@@ -49,6 +50,8 @@ void setup()
     
     // set time between retries and max no. of retries
     radio.setRetries(4, 10);
+//      printf_begin();
+//  radio.printDetails();
     
     // enable ack payload - each slave replies with sensor data using this feature
     radio.enableAckPayload();

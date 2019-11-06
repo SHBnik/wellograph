@@ -115,8 +115,8 @@ def read_position(data):
     global yaw_callback_last_time , __yaw,index,once,Drawn_points,wells_position_list,home_flag,time_frame_num
     robot_x_pos = data.pose.position.x * 10 # meter
     robot_y_pos = data.pose.position.y * 10 # meter
-    point_x = float(wells_position_list[index][1]/1000)#convert to milimeter
-    point_y = float(wells_position_list[index][0]/1000)#convert to milimeter
+    point_x = float(wells_position_list[index][1]/100)#convert centimeter to milimeter 
+    point_y = float(wells_position_list[index][0]/100)#convert centimeter to milimeter
     (eu_roll, eu_pitch, eu_yaw) = tf.transformations.euler_from_quaternion(
         [data.pose.orientation.x,
          data.pose.orientation.y,

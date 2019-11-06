@@ -41,7 +41,7 @@ void create_dot(){
 
 
 void setup() {
-  pen.attach(12);
+  pen.attach(13);
   pen.write(180);
   Serial.begin(9600);
  
@@ -68,6 +68,7 @@ void setup() {
   // print radio config details to console
   printf_begin();
   radio.printDetails();
+//  while(1);
 
   // start listening on radio
   radio.startListening();
